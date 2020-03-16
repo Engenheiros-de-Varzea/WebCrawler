@@ -10,6 +10,7 @@ import java.util.List;
  */
 
 public class ServidorBean {
+    private int id;
     private int rgf;
     private String nome;
     private String cargo;
