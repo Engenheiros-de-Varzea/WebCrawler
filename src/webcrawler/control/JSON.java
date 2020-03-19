@@ -46,28 +46,27 @@ public class JSON {
         servidor.setNome(json.get("nome").toString());
         servidor.setCargo(json.get("cargo").toString());
         servidor.setRegime(json.get("regime").toString());
+        String referencia = json.get("referencia").toString();
         
         List<SalarioBean> salarios = new ArrayList<>();
         String[][] tipos_lancamento = {{"rendimentos", "1"},{"descontos", "2"},{"outros","2"}};
-        SalarioBean salario = new SalarioBean(0, "", 0.0);
         for(String[] tipo_lancamento: tipos_lancamento){
             JSONArray lancamentos = (JSONArray) json.get(tipo_lancamento[0]);
             if(lancamentos != null) for(Object lancamento: lancamentos) {
+                SalarioBean salario = new SalarioBean();
                 salario.setId_lancamento(Integer.parseInt(tipo_lancamento[1]));
+                try {
+                    salario.setReferencia(new SimpleDateFormat("MMM/yyyy", new Locale("pt", "BR")).parse(referencia));
+                } catch (java.text.ParseException ex) {
+                    System.out.println("Exception: " + ex.getMessage());
+                    System.out.println("Erro ao converter a data de String para Date.\n");
+                }
                 salario.setDescricao(((JSONObject) lancamento).get("nome").toString());
                 salario.setValor(Double.parseDouble( ((JSONObject) lancamento).get("valor").toString().replace(".", "").replace(",", ".") ));
                 salarios.add(salario);
             }
         }
         servidor.setSalario(salarios);
-        
-        String referencia = json.get("referencia").toString();
-        try {
-            servidor.setReferencia(new SimpleDateFormat("MMM/yyyy", new Locale("pt", "BR")).parse(referencia));
-        } catch (java.text.ParseException ex) {
-            System.out.println("Exception: " + ex.getMessage());
-            System.out.println("Erro ao converter a data de String para Date.\n");
-        }
         
         return servidor;
     }

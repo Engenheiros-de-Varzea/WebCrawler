@@ -3,15 +3,15 @@ package webcrawler.model.dao;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import webcrawler.model.bean.SalarioBean;
+import webcrawler.model.bean.ServidorBean;
 import webcrawler.model.connection.ConnectionFactory;
 
-public class SalarioDAO {
+public class ServidorDAO {
     private Connection conn = null;
 
     public int getLastId() {
         this.conn = ConnectionFactory.getConnection();
-        String sql = "SELECT MAX(ID) AS 'ID' FROM SALARIO";
+        String sql = "SELECT MAX(ID) AS 'ID' FROM SERVIDOR";
         int lastId = 0;
         PreparedStatement stmt = null;
         ResultSet rs = null;
@@ -35,20 +35,19 @@ public class SalarioDAO {
         }
     }
 
-    public boolean insert(SalarioBean salario) {
+    public boolean insert(ServidorBean servidor) {
         this.conn = ConnectionFactory.getConnection();
-        String sql = "INSERT INTO SALARIO(ID_SERVIDOR, ID_LANCAMENTO, REFERENCIA, DESCRICAO, VALOR, DT_INCLUSAO) VALUES(?,?,?,?,?,?)";
+        String sql = "INSERT INTO SERVIDOR(RGF, NOME, CARGO, REGIME, DT_INCLUSAO) VALUES(?,?,?,?,?)";
 
         PreparedStatement stmt = null;
 
         try {
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, salario.getId_servidor());
-            stmt.setInt(2, salario.getId_lancamento());
-            stmt.setDate(3, new java.sql.Date(salario.getReferencia().getTime()));
-            stmt.setString(4, salario.getDescricao());
-            stmt.setDouble(5, salario.getValor());
-            stmt.setDate(6, new java.sql.Date(salario.getDt_inclusao().getTime()));
+            stmt.setInt(1, servidor.getRgf());
+            stmt.setString(2, servidor.getNome());
+            stmt.setString(3, servidor.getCargo());
+            stmt.setString(4, servidor.getRegime());
+            stmt.setDate(5, new java.sql.Date(servidor.getDt_inclusao().getTime()));
 
             stmt.execute();
             return true;
@@ -61,21 +60,20 @@ public class SalarioDAO {
         }
     }
 
-    public boolean update(SalarioBean salario) {
+    public boolean update(ServidorBean servidor) {
         this.conn = ConnectionFactory.getConnection();
-        String sql = "UPDATE SALARIO SET ID_SERVIDOR=?, ID_LANCAMENTO=?, REFERENCIA=?, DESCRICAO=?, VALOR=?, DT_INCLUSAO=? WHERE ID=?";
+        String sql = "UPDATE SERVIDOR SET RGF=?, NOME=?, CARGO=?, REGIME=?, DT_INCLUSAO=? WHERE ID=?";
 
         PreparedStatement stmt = null;
 
         try {
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, salario.getId_servidor());
-            stmt.setInt(2, salario.getId_lancamento());
-            stmt.setDate(3, new java.sql.Date(salario.getReferencia().getTime()));
-            stmt.setString(4, salario.getDescricao());
-            stmt.setDouble(5, salario.getValor());
-            stmt.setDate(6, new java.sql.Date(salario.getDt_inclusao().getTime()));
-            stmt.setInt(7, salario.getId());
+            stmt.setInt(1, servidor.getRgf());
+            stmt.setString(2, servidor.getNome());
+            stmt.setString(3, servidor.getCargo());
+            stmt.setString(4, servidor.getRegime());
+            stmt.setDate(5, new java.sql.Date(servidor.getDt_inclusao().getTime()));
+            stmt.setInt(6, servidor.getId());
 
             return stmt.executeUpdate() == 1;
         } catch (SQLException ex) {
@@ -87,15 +85,15 @@ public class SalarioDAO {
         }
     }
 
-    public boolean delete(SalarioBean salario) {
+    public boolean delete(ServidorBean servidor) {
         this.conn = ConnectionFactory.getConnection();
-        String sql = "DELETE FROM SALARIO WHERE ID=?";
+        String sql = "DELETE FROM SERVIDOR WHERE ID=?";
 
         PreparedStatement stmt = null;
 
         try {
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, salario.getId());
+            stmt.setInt(1, servidor.getId());
 
             return stmt.executeUpdate() == 1;
         } catch (SQLException ex) {
@@ -107,10 +105,10 @@ public class SalarioDAO {
         }
     }
 
-    public List<SalarioBean> selectAll() {
+    public List<ServidorBean> selectAll() {
         this.conn = ConnectionFactory.getConnection();
-        String sql = "SELECT * FROM SALARIO ORDER BY ID DESC";
-        List<SalarioBean> salarios = new ArrayList<>();
+        String sql = "SELECT * FROM SERVIDOR ORDER BY ID DESC";
+        List<ServidorBean> servidors = new ArrayList<>();
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
@@ -119,18 +117,17 @@ public class SalarioDAO {
             rs = stmt.executeQuery();
 
             while (rs.next()) {
-                SalarioBean found = new SalarioBean();
+                ServidorBean found = new ServidorBean();
                 found.setId(rs.getInt("ID"));
-                found.setId_servidor(rs.getInt("ID_SERVIDOR"));
-                found.setId_lancamento(rs.getInt("ID_LANCAMENTO"));
-                found.setReferencia(rs.getDate("REFERENCIA"));
-                found.setDescricao(rs.getString("DESCRICAO"));
-                found.setValor(rs.getDouble("VALOR"));
+                found.setRgf(rs.getInt("RGF"));
+                found.setNome(rs.getString("NOME"));
+                found.setCargo(rs.getString("CARGO"));
+                found.setRegime(rs.getString("REGIME"));
                 found.setDt_inclusao(rs.getDate("DT_INCLUSAO"));
 
-                salarios.add(found);
+                servidors.add(found);
             }
-            return salarios;
+            return servidors;
         } catch (SQLException ex) {
             System.out.println("Exception: " + ex.getMessage());
             System.out.println("Não foi possível selecionar os dados no banco de dados.\n");
@@ -140,61 +137,25 @@ public class SalarioDAO {
         }
     }
     
-    public List<SalarioBean> selectAllById_servidor(SalarioBean salario) {
+    public ServidorBean selectOneById(ServidorBean servidor) {
         this.conn = ConnectionFactory.getConnection();
-        String sql = "SELECT * FROM SALARIO WHERE ID_SERVIDOR=? ORDER BY ID DESC";
-        List<SalarioBean> salarios = new ArrayList<>();
+        String sql = "SELECT * FROM SERVIDOR WHERE ID=?";
+        ServidorBean found = new ServidorBean();
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, salario.getId_servidor());
-            
-            rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                SalarioBean found = new SalarioBean();
-                found.setId(rs.getInt("ID"));
-                found.setId_servidor(rs.getInt("ID_SERVIDOR"));
-                found.setId_lancamento(rs.getInt("ID_LANCAMENTO"));
-                found.setReferencia(rs.getDate("REFERENCIA"));
-                found.setDescricao(rs.getString("DESCRICAO"));
-                found.setValor(rs.getDouble("VALOR"));
-                found.setDt_inclusao(rs.getDate("DT_INCLUSAO"));
-
-                salarios.add(found);
-            }
-            return salarios;
-        } catch (SQLException ex) {
-            System.out.println("Exception: " + ex.getMessage());
-            System.out.println("Não foi possível selecionar os dados no banco de dados.\n");
-            return null;
-        } finally {
-            ConnectionFactory.closeConnection(conn, stmt, rs);
-        }
-    }
-    
-    public SalarioBean selectOneById(SalarioBean salario) {
-        this.conn = ConnectionFactory.getConnection();
-        String sql = "SELECT * FROM SALARIO WHERE ID=?";
-        SalarioBean found = new SalarioBean();
-        PreparedStatement stmt = null;
-        ResultSet rs = null;
-
-        try {
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, salario.getId());
+            stmt.setInt(1, servidor.getId());
             
             rs = stmt.executeQuery();
 
             if (rs.next()) {
                 found.setId(rs.getInt("ID"));
-                found.setId_servidor(rs.getInt("ID_SERVIDOR"));
-                found.setId_lancamento(rs.getInt("ID_LANCAMENTO"));
-                found.setReferencia(rs.getDate("REFERENCIA"));
-                found.setDescricao(rs.getString("DESCRICAO"));
-                found.setValor(rs.getDouble("VALOR"));
+                found.setRgf(rs.getInt("RGF"));
+                found.setNome(rs.getString("NOME"));
+                found.setCargo(rs.getString("CARGO"));
+                found.setRegime(rs.getString("REGIME"));
                 found.setDt_inclusao(rs.getDate("DT_INCLUSAO"));
             }
             
@@ -208,15 +169,15 @@ public class SalarioDAO {
         }
     }
     
-    public boolean verifyExist(SalarioBean salario) {
+    public boolean verifyExist(ServidorBean servidor) {
         this.conn = ConnectionFactory.getConnection();
-        String sql = "SELECT COUNT(*) AS 'QUANT' FROM SALARIO WHERE ID=?";
+        String sql = "SELECT COUNT(*) AS 'QUANT' FROM SERVIDOR WHERE ID=?";
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, salario.getId());
+            stmt.setInt(1, servidor.getId());
             
             rs = stmt.executeQuery();
 

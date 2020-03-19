@@ -16,26 +16,36 @@ public class ServidorBean {
     private String cargo;
     private String regime;
     private List<SalarioBean> salario;
-    private Date referencia;
+    private Date dt_inclusao;
 
     public ServidorBean() {
+        this.id = 0;
         this.rgf = 0;
         this.nome = "";
         this.cargo = "";
         this.regime = "";
         this.salario = new ArrayList<>();
-        this.referencia = new Date();
+        this.dt_inclusao = new Date();
     }
     
-    public ServidorBean(int id, int rgf, String nome, String cargo, String regime, List<SalarioBean> salario, Date referencia) {
+    public ServidorBean(int id, int rgf, String nome, String cargo, String regime, List<SalarioBean> salario, Date dt_inclusao) {
+        this.id = id;
         this.rgf = rgf;
         this.nome = nome;
         this.cargo = cargo;
         this.regime = regime;
         this.salario = salario;
-        this.referencia = referencia;
+        this.dt_inclusao = dt_inclusao;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    
     public int getRgf() {
         return rgf;
     }
@@ -76,12 +86,12 @@ public class ServidorBean {
         this.salario = salario;
     } 
 
-    public Date getReferencia() {
-        return referencia;
+    public Date getDt_inclusao() {
+        return dt_inclusao;
     }
 
-    public void setReferencia(Date referencia) {
-        this.referencia = referencia;
+    public void setDt_inclusao(Date dt_inclusao) {
+        this.dt_inclusao = dt_inclusao;
     }
     
 }
