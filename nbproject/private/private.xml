@@ -4,9 +4,7 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/paulo/Documents/WebCrawler/src/webcrawler/Main.java</file>
-            <file>file:/C:/Users/paulo/Documents/WebCrawler/src/webcrawler/model/connection/ConnectionFactory.java</file>
-            <file>file:/C:/Users/paulo/Documents/WebCrawler/src/webcrawler/model/bean/ServidorBean.java</file>
-            <file>file:/C:/Users/paulo/Documents/WebCrawler/src/webcrawler/model/bean/SalarioBean.java</file>
+            <file>file:/C:/Users/paulo/Documents/WebCrawler/src/webcrawler/control/Request.java</file>
             <file>file:/C:/Users/paulo/Documents/WebCrawler/src/webcrawler/model/dao/ServidorDAO.java</file>
             <file>file:/C:/Users/paulo/Documents/WebCrawler/src/webcrawler/model/dao/SalarioDAO.java</file>
             <file>file:/C:/Users/paulo/Documents/WebCrawler/src/webcrawler/control/JSON.java</file>

@@ -28,13 +28,14 @@ public class Request {
             while((inputLine = in.readLine()) != null) {
                 response += inputLine;
             }
+            if(con.getResponseCode() != 200){ System.out.println(URL + "\n" + HTTPStatusCode.getMessage(con.getResponseCode()) + "\n"); }
+            return response;
+        } catch (Exception ex) {
+            System.out.println("Erro: " + ex.getMessage());
+            return "";
         } finally {
-            System.out.println(URL);
-            System.out.println(HTTPStatusCode.getMessage(con.getResponseCode()) + "\n");
             con.disconnect();
         }
-        
-        return response;
     }
     
 }

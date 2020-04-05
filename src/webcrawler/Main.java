@@ -20,25 +20,34 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         //Primeira rota - Seleciona os RGF's
-        String url = "http://www.licitacao.pmmc.com.br/Transparencia/vencimentos2";
-        List<Object> rgfs = JSON.tratarRgfs(JSON.converter(Request.getRequest(url)));
+        String request = Request.getRequest("http://www.licitacao.pmmc.com.br/Transparencia/vencimentos2");
+        if(!"".equals(request)){
+            List<Object> rgfs = JSON.tratarRgfs(JSON.converter(request));
         
-        //Segunda rota - Seleciona os salários
-        List<ServidorBean> servidores = new ArrayList<>();
-        for(Object rgf: rgfs){
-            url = "http://www.licitacao.pmmc.com.br/Transparencia/detalhamento?rgf=" + rgf;
-            servidores.add(JSON.tratarServidor(JSON.converter(Request.getRequest(url)), rgf));
-        }
-        
-        //Include - Sem verificação de duplicidade
-        for(ServidorBean servidor: servidores){
-            servidor.setDt_inclusao(new Date());
-            new ServidorDAO().insert(servidor);
-            int id_servidor = new ServidorDAO().getLastId();
-            for(SalarioBean salario: servidor.getSalario()){
-                salario.setId_servidor(id_servidor);
-                salario.setDt_inclusao(new Date());
-                new SalarioDAO().insert(salario);
+            //Segunda rota - Seleciona os salários
+            for(Object rgf: rgfs){
+                request = Request.getRequest("http://www.licitacao.pmmc.com.br/Transparencia/detalhamento?rgf=" + rgf);
+                if(!"".equals(request)){
+                    ServidorBean servidor = JSON.tratarServidor(JSON.converter(request), rgf);
+                    servidor.setId(new ServidorDAO().getId(servidor));
+
+                    //Include - Com verificação de duplicidade
+                    if(servidor.getId() == 0){
+                        servidor.setDt_inclusao(new Date());
+                        new ServidorDAO().insert(servidor);
+                        servidor.setId(new ServidorDAO().getId(servidor));
+                    }
+
+                    for(SalarioBean salario: servidor.getSalario()){
+                        salario.setId_servidor(servidor.getId());
+                        salario.setId(new SalarioDAO().getId(salario));
+
+                        if(salario.getId() == 0){
+                            salario.setDt_inclusao(new Date());
+                            new SalarioDAO().insert(salario);
+                        }
+                    }
+                }
             }
         }
     }

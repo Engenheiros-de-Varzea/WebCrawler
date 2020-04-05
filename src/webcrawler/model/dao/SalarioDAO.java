@@ -208,27 +208,31 @@ public class SalarioDAO {
         }
     }
     
-    public boolean verifyExist(SalarioBean salario) {
+    public int getId(SalarioBean salario) {
         this.conn = ConnectionFactory.getConnection();
-        String sql = "SELECT COUNT(*) AS 'QUANT' FROM SALARIO WHERE ID=?";
+        String sql = "SELECT ID FROM SALARIO WHERE ID_SERVIDOR=? AND ID_LANCAMENTO=? AND REFERENCIA=? AND DESCRICAO=? AND VALOR=?";
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, salario.getId());
+            stmt.setInt(1, salario.getId_servidor());
+            stmt.setInt(2, salario.getId_lancamento());
+            stmt.setDate(3, new java.sql.Date(salario.getReferencia().getTime()));
+            stmt.setString(4, salario.getDescricao());
+            stmt.setDouble(5, salario.getValor());
             
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return !(rs.getInt("QUANT") == 0);
+                return rs.getInt("ID");
             } else{
-                return false;
+                return 0;
             }
         } catch (SQLException ex) {
             System.out.println("Exception: " + ex.getMessage());
             System.out.println("Não foi possível selecionar os dados no banco de dados.\n");
-            return false;
+            return 0;
         } finally {
             ConnectionFactory.closeConnection(conn, stmt, rs);
         }

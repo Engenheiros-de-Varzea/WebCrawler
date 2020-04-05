@@ -169,27 +169,30 @@ public class ServidorDAO {
         }
     }
     
-    public boolean verifyExist(ServidorBean servidor) {
+    public int getId(ServidorBean servidor) {
         this.conn = ConnectionFactory.getConnection();
-        String sql = "SELECT COUNT(*) AS 'QUANT' FROM SERVIDOR WHERE ID=?";
+        String sql = "SELECT ID FROM SERVIDOR WHERE RGF=? AND NOME=? AND CARGO=? AND REGIME=?";
         PreparedStatement stmt = null;
         ResultSet rs = null;
 
         try {
             stmt = conn.prepareStatement(sql);
-            stmt.setInt(1, servidor.getId());
+            stmt.setInt(1, servidor.getRgf());
+            stmt.setString(2, servidor.getNome());
+            stmt.setString(3, servidor.getCargo());
+            stmt.setString(4, servidor.getRegime());
             
             rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return !(rs.getInt("QUANT") == 0);
+                return rs.getInt("ID");
             } else{
-                return false;
+                return 0;
             }
         } catch (SQLException ex) {
             System.out.println("Exception: " + ex.getMessage());
             System.out.println("Não foi possível selecionar os dados no banco de dados.\n");
-            return false;
+            return 0;
         } finally {
             ConnectionFactory.closeConnection(conn, stmt, rs);
         }
